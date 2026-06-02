@@ -1,11 +1,11 @@
 export default class ServicoDePagamento {
-    #pagamentos // Propriedade Privada
+    #pagamentos
 
-    constructor() { // Primeiro método a ser executado quando usar a Classe
+    constructor() {
         this.#pagamentos = [];
     }
 
-    pagar(codigoBarras, empresa, valor) { // Método
+    pagar(codigoBarras, empresa, valor) {
 
         let categoriaPagamento;
 

@@ -1,0 +1,51 @@
+# Objetivo
+#
+# Desenvolver uma pipeline de integração contínua utilizando GitHub Actions
+# para executar testes automatizados, gerar o relatório dos testes e
+# armazená-lo como artefato da pipeline.
+
+name: Integração Contínua
+
+on:
+  # Executa automaticamente quando houver push na branch main.
+  push:
+    branches:
+      - main
+
+  # Permite executar manualmente pela aba Actions do GitHub.
+  workflow_dispatch:
+
+  # Executa sempre no domingo às 10h no horário de Brasília.
+  schedule:
+    - cron: '0 13 * * 0'
+    # Observação: O GitHub Actions utiliza horário UTC, portanto 13h UTC = 10h de Brasília.
+
+jobs:
+  testes:
+    name: Testes automatizados
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.x'
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar testes e gerar relatório
+        run: npm run test:report
+
+      - name: Publicar relatório dos testes
+        if: always() && hashFiles('reports/**') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: relatorio-testes-mochawesome
+          path: reports/
+          retention-days: 7
